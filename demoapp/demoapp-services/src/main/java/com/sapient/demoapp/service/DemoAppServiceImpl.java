@@ -31,23 +31,29 @@ public class DemoAppServiceImpl implements DemoAppService {
 	@Override
 	public JSONObject getData(String country, String league, String team) {
 
+		String countryId = "";
+		String leagueId = "";
 		String result = null;
-
-		String countryId = getCountryId(country);
-
-		String leagueId = getLeagueId(countryId);
-
-		TeamDetailDTO teamDetail = getTeamDetail(leagueId, team);
-
-		String overallLeaguePosition = getCurrentStanding(country, league, team, leagueId);
-
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("Country ID & Name", countryId + " - " + country);
-		jsonObj.put("League ID & Name", leagueId + " - " + league);
-		jsonObj.put("Team ID & Name", teamDetail.getTeam_key() + " - " + team);
-		jsonObj.put("Overall League Position", overallLeaguePosition);
 
-		System.out.println("Json - " + jsonObj);
+		try {
+
+			countryId = getCountryId(country);
+
+			leagueId = getLeagueId(countryId);
+
+			TeamDetailDTO teamDetail = getTeamDetail(leagueId, team);
+
+			String overallLeaguePosition = getCurrentStanding(country, league, team, leagueId);
+
+			jsonObj.put("Country ID & Name", countryId + " - " + country);
+			jsonObj.put("League ID & Name", leagueId + " - " + league);
+			jsonObj.put("Team ID & Name", teamDetail.getTeam_key() + " - " + team);
+			jsonObj.put("Overall League Position", overallLeaguePosition);
+
+		} catch (Exception e) {
+			LOGGER.error(Logger.EVENT_FAILURE, "Error occurred");
+		}
 
 		return jsonObj;
 	}
@@ -55,7 +61,7 @@ public class DemoAppServiceImpl implements DemoAppService {
 	public String getCurrentStanding(String country, String league, String team, String leagueId) {
 
 		String resp = null;
-		String overallLeaguePosition = null;
+		String overallLeaguePosition = "";
 		StringBuilder finalUrl = new StringBuilder(baseUri);
 		finalUrl.append("get_standings&league_id=").append(leagueId).append("&APIkey=").append(apiKey);
 
@@ -90,7 +96,7 @@ public class DemoAppServiceImpl implements DemoAppService {
 		List<TeamDetailDTO> teamList = new ArrayList<>();
 		TeamDetailDTO teaamDto = new TeamDetailDTO();
 		String resp = null;
-		String countryId = null;
+		String countryId = "";
 		StringBuilder finalUrl = new StringBuilder(baseUri);
 		finalUrl.append("get_teams&league_id=").append(leagueId).append("&APIkey=").append(apiKey);
 
@@ -105,7 +111,6 @@ public class DemoAppServiceImpl implements DemoAppService {
 			}.getType());
 
 			for (TeamDetailDTO dto : teamList) {
-				System.out.println(dto.getTeam_key() + " - " + dto.getTeam_name());
 				if (dto.getTeam_name().equals(team)) {
 					teaamDto.setTeam_key(dto.getTeam_key());
 					teaamDto.setTeam_name(dto.getTeam_name());
@@ -124,7 +129,7 @@ public class DemoAppServiceImpl implements DemoAppService {
 	public String getCountryId(String country) {
 
 		String resp = null;
-		String countryId = null;
+		String countryId = "";
 		StringBuilder finalUrl = new StringBuilder(baseUri);
 		finalUrl.append("get_countries&APIkey=").append(apiKey);
 
@@ -156,7 +161,7 @@ public class DemoAppServiceImpl implements DemoAppService {
 
 	public String getLeagueId(String countryId) {
 		String resp = null;
-		String leagueId = null;
+		String leagueId = "";
 		StringBuilder finalUrl = new StringBuilder(baseUri);
 		finalUrl.append("get_leagues&country_id=").append(countryId).append("&APIkey=").append(apiKey);
 

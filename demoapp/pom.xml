@@ -19,7 +19,6 @@
 	
 	<modules>
 	<module>demoapp-services</module>
-	<!-- <module>demoapp-ui</module> -->
 	</modules>
 
 	<name>demoapp</name>
